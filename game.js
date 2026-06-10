@@ -730,7 +730,7 @@ function update(dt){
     return;
   }
 
-  }
+  
 
   if(gameState==='playing'){
     round.timer-=dt/60;
