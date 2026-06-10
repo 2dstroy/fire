@@ -310,13 +310,13 @@ const ROUND_TIME = 115, BUY_TIME = 20, BOMB_TIME = 40;
 const DEFUSE_TIME = 5, PLANT_TIME = 3;
 
 const WEAPONS = {
-  glock:  {name:'GLOCK-17',dmg:22,rof:180,reload:1.5,mag:15,reserve:45,spread:0.08,auto:false,cost:200,type:'Pistol'},
-  usp:    {name:'USP-S',   dmg:25,rof:250,reload:2.0,mag:12,reserve:36,spread:0.05,auto:false,cost:300,type:'Pistol'},
-  deagle: {name:'DEAGLE', dmg:98,rof:700,reload:2.2,mag:7, reserve:35,spread:0.06,auto:false,cost:700,type:'Pistol'},
-  mp5:    {name:'MP5-SD', dmg:28,rof:120,reload:2.0,mag:30,reserve:120,spread:0.06,auto:true, cost:1500,type:'SMG'},
-  ak47:   {name:'AK-47',  dmg:86,rof:600,reload:2.5,mag:30,reserve:90, spread:0.10,auto:true, cost:2700,type:'Rifle'},
-  m4a1:   {name:'M4A1-S', dmg:74,rof:500,reload:3.1,mag:20,reserve:80, spread:0.05,auto:true, cost:2900,type:'Rifle'},
-  awp:    {name:'AWP',    dmg:999,rof:1300,reload:3.7,mag:5,reserve:30,spread:0.01,auto:false,cost:4750,type:'Sniper'},
+  glock:  {name:'GLOCK-17',dmg:22,rof:100,reload:1.5,mag:15,reserve:45,spread:0.08,auto:false,cost:200,type:'Pistol'},
+  usp:    {name:'USP-S',   dmg:25,rof:120,reload:2.0,mag:12,reserve:36,spread:0.05,auto:false,cost:300,type:'Pistol'},
+  deagle: {name:'DEAGLE', dmg:98,rof:200,reload:2.2,mag:7, reserve:35,spread:0.06,auto:false,cost:700,type:'Pistol'},
+  mp5:    {name:'MP5-SD', dmg:28,rof:80,reload:2.0,mag:30,reserve:120,spread:0.06,auto:true, cost:1500,type:'SMG'},
+  ak47:   {name:'AK-47',  dmg:86,rof:150,reload:2.5,mag:30,reserve:90, spread:0.10,auto:true, cost:2700,type:'Rifle'},
+  m4a1:   {name:'M4A1-S', dmg:74,rof:160,reload:3.1,mag:20,reserve:80, spread:0.05,auto:true, cost:2900,type:'Rifle'},
+  awp:    {name:'AWP',    dmg:999,rof:200,reload:3.7,mag:5,reserve:30,spread:0.01,auto:false,cost:4750,type:'Sniper'},
   helmet: {name:'HELMET', cost:350,type:'Equipment'},
   armor:  {name:'ARMOR',  cost:650,type:'Equipment'},
   he:     {name:'HE GREN',cost:300,type:'Grenade'},
@@ -374,7 +374,7 @@ const player = {
 
 let enemies=[],bullets=[],effects=[],killfeed=[];
 let bomb={planted:false,x:0,y:0,timer:0,defusing:false,defuseProgress:0,planting:false,plantProgress:0,siteLabel:'A'};
-let round={num:1,ctScore:0,tScore:0,timer:ROUND_TIME,phase:'action',phaseTimer:BUY_TIME};
+let round={num:1,ctScore:0,tScore:0,timer:ROUND_TIME,phase:'buy',phaseTimer:BUY_TIME};
 let nextRoundTimer=0, isBuyOpen=false;
 let keys={}, mouseX=0, mouseY=0, mouseDown=false;
 
@@ -540,7 +540,7 @@ document.addEventListener('mousedown',()=>{mouseDown=true;});
 document.addEventListener('mouseup',()=>{mouseDown=false;});
 
 function handleKeyDown(e){
-  if(e.key.toLowerCase()==='b'&&player.alive&&round.phase==='buy') {
+  if(e.key.toLowerCase()==='b'&&player.alive) {
     isBuyOpen=!isBuyOpen;
     if(isBuyOpen) openBuyMenu();
     else closeBuyMenu();
@@ -597,6 +597,8 @@ function openBuyMenu(){
           if(key==='helmet') player.hasHelmet=true;
           player.money-=weapon.cost;
         }
+        closeBuyMenu();
+        isBuyOpen=false;
         updateHUD();
       });
     }
