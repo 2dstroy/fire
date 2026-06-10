@@ -1181,4 +1181,3 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
   };
 }
 
-</script>
