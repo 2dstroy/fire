@@ -729,7 +729,7 @@ function update(dt){
     }
     return;
   }
-<script src="joystic.js"></script>
+
   }
 
   if(gameState==='playing'){
