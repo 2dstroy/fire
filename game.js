@@ -374,7 +374,7 @@ const player = {
 
 let enemies=[],bullets=[],effects=[],killfeed=[];
 let bomb={planted:false,x:0,y:0,timer:0,defusing:false,defuseProgress:0,planting:false,plantProgress:0,siteLabel:'A'};
-let round={num:1,ctScore:0,tScore:0,timer:ROUND_TIME,phase:'buy',phaseTimer:BUY_TIME};
+let round={num:1,ctScore:0,tScore:0,timer:ROUND_TIME,phase:'action',phaseTimer:BUY_TIME};
 let nextRoundTimer=0, isBuyOpen=false;
 let keys={}, mouseX=0, mouseY=0, mouseDown=false;
 
