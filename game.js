@@ -780,7 +780,7 @@ function updateRound(){
   }
 
   // Check round end conditions
-  const aliveEnemies=enemies.filter(e=>e.alive&&e.isT).length;
+  const aliveEnemies=enemies.filter(e=>e.alive).length;
   const alivePlayer=player.alive?1:0;
   if(aliveEnemies===0&&bomb.planted===false) {
     endRound('ct','ALL TERRORISTS ELIMINATED',3250);
@@ -916,6 +916,7 @@ function drawGame(){
     }
   }
   mctx.fillStyle='#5ba3f0';
+  mctx.beginPath();
   mctx.arc(player.x*scale,player.y*scale,2,0,Math.PI*2);
   mctx.fill();
   enemies.forEach(e=>{
