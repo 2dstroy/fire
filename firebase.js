@@ -1,7 +1,4 @@
 // firebase.js
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-
 const firebaseConfig = {
   apiKey: "AIzaSyBHMAZ9fJbqYx-14MAY5WwSFPfV5q6jXzs",
   authDomain: "fire-7eb23.firebaseapp.com",
@@ -9,11 +6,20 @@ const firebaseConfig = {
   storageBucket: "fire-7eb23.firebasestorage.app",
   messagingSenderId: "629103600698",
   appId: "1:629103600698:web:1e361a37cafbee53860103",
-  measurementId: "G-WV2DX2NZGX"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Initialize Firebase (using compat version for simplicity)
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-export { db };
+window._db = db;
+window._firestoreOk = true;
+window._fs = {
+  doc: firebase.firestore().doc,
+  setDoc: firebase.firestore().setDoc,
+  getDoc: firebase.firestore().getDoc,
+  onSnapshot: firebase.firestore().onSnapshot,
+  updateDoc: firebase.firestore().updateDoc,
+  deleteField: firebase.firestore().deleteField,
+  serverTimestamp: firebase.firestore.FieldValue.serverTimestamp
+};
