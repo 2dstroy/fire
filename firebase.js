@@ -8,22 +8,37 @@ const firebaseConfig = {
   appId: "1:629103600698:web:1e361a37cafbee53860103"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Default stubs (solo mode works even if Firebase fails)
+window._db = null;
+window._firestoreOk = false;
+window._fs = {};
 
-const db = firebase.firestore();
+// Load Firebase
+(async function initFirebase() {
+  try {
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js");
+    const { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc, 
+      onSnapshot, 
+      updateDoc, 
+      deleteField, 
+      serverTimestamp 
+    } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
 
-window._db = db;
-window._firestoreOk = true;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-window._fs = {
-  doc: firebase.firestore().doc,
-  setDoc: firebase.firestore().setDoc,
-  getDoc: firebase.firestore().getDoc,
-  onSnapshot: firebase.firestore().onSnapshot,
-  updateDoc: firebase.firestore().updateDoc,
-  deleteField: firebase.firestore.FieldValue.delete,
-  serverTimestamp: () => firebase.firestore.FieldValue.serverTimestamp()
-};
+    window._db = db;
+    window._firestoreOk = true;
+    window._fs = { doc, setDoc, getDoc, onSnapshot, updateDoc, deleteField, serverTimestamp };
 
-console.log("✅ Firebase initialized successfully");
+    console.log("✅ Firebase initialized successfully (Modular)");
+    
+  } catch (e) {
+    console.error("❌ Firebase failed to load:", e);
+    window._firestoreOk = false;
+  }
+})();
