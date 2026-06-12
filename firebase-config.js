@@ -3,12 +3,12 @@
 //  from Firebase Console → Project Settings
 // ══════════════════════════════════════════
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBJgFsx0Aq63bbQ7mwfOI6_0pSWJkO8zp8",
+  authDomain: "mamaspace-bf004.firebaseapp.com",
+  projectId: "mamaspace-bf004",
+  storageBucket: "mamaspace-bf004.firebasestorage.app",
+  messagingSenderId: "520083469560",
+  appId: "1:520083469560:web:d83cec2ce32ba0fa1bf70d"
 };
 
 // Default stubs so solo works even if Firebase is unconfigured
