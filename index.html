@@ -1,196 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Operation Zero Hour — Multiplayer</title>
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation Zero Hour — Multiplayer</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<canvas id="gameCanvas"></canvas>
-<div id="ui">
 
-  <!-- ═══════════════ MAIN MENU ═══════════════ -->
-  <div id="main-menu">
-    <div class="menu-bg-grid"></div>
-    <div id="mm-logo">Operation<span>Zero Hour</span></div>
-    <div id="mm-sub">// tactical · round-based · first-person shooter</div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui">
 
-    <div id="menu-tabs">
-      <div class="menu-tab active" data-tab="solo">SOLO</div>
-      <div class="menu-tab" data-tab="character">CHARACTER</div>
-      <div class="menu-tab" data-tab="multiplayer">MULTIPLAYER</div>
-    </div>
+        <!-- ═══════════════ MAIN MENU ═══════════════ -->
+        <div id="main-menu">
+            <div class="menu-bg-grid"></div>
+            <div id="mm-logo">Operation<span>Zero Hour</span></div>
+            <div id="mm-sub">// tactical · round-based · first-person shooter</div>
 
-    <!-- SOLO TAB -->
-    <div class="menu-panel active" id="tab-solo">
-      <div id="mm-controls">
-        WASD — Move &nbsp;|&nbsp; Mouse — Aim &nbsp;|&nbsp; Click — Shoot<br>
-        R — Reload &nbsp;|&nbsp; B — Buy Menu &nbsp;|&nbsp; F — Defuse Bomb<br>
-        1/2/3 — Switch Weapon<br><br>
-        <span style="color:#c8a96e;">📱 MOBILE:</span> Left stick — Move &nbsp;|&nbsp; Drag right — Aim<br>
-        FIRE — Shoot &nbsp;|&nbsp; RLD — Reload &nbsp;|&nbsp; ACT — Defuse/Plant<br>
-        You play as CT. Defuse the bomb or eliminate all Terrorists.
-      </div>
-      <button id="mm-start">DEPLOY SOLO</button>
-    </div>
+            <div id="menu-tabs">
+                <div class="menu-tab active" data-tab="solo">SOLO</div>
+                <div class="menu-tab" data-tab="character">CHARACTER</div>
+                <div class="menu-tab" data-tab="multiplayer">MULTIPLAYER</div>
+            </div>
 
-    <!-- CHARACTER TAB -->
-    <div class="menu-panel" id="tab-character">
-      <div id="char-panel">
-        <div class="char-preview">
-          <canvas id="char-canvas-preview" width="100" height="100"></canvas>
+            <!-- SOLO TAB -->
+            <div class="menu-panel active" id="tab-solo">
+                <div id="mm-controls">
+                    WASD — Move &nbsp;|&nbsp; Mouse — Aim &nbsp;|&nbsp; Click — Shoot<br>
+                    R — Reload &nbsp;|&nbsp; B — Buy Menu &nbsp;|&nbsp; F — Defuse Bomb<br>
+                    1/2/3 — Switch Weapon<br><br>
+                    <span style="color:#c8a96e;">📱 MOBILE:</span> Left stick — Move &nbsp;|&nbsp; Drag right — Aim<br>
+                    FIRE — Shoot &nbsp;|&nbsp; RLD — Reload &nbsp;|&nbsp; ACT — Defuse/Plant<br>
+                    You play as CT. Defuse the bomb or eliminate all Terrorists.
+                </div>
+                <button id="mm-start">DEPLOY SOLO</button>
+            </div>
+
+            <!-- CHARACTER TAB -->
+            <div class="menu-panel" id="tab-character">
+                <div id="char-panel">
+                    <div class="char-preview">
+                        <canvas id="char-canvas-preview" width="100" height="100"></canvas>
+                    </div>
+                    <div class="char-row">
+                        <div class="char-row-label">CALLSIGN</div>
+                        <input class="char-name-input" id="char-name" maxlength="12" placeholder="GHOST_7" value="GHOST_7">
+                    </div>
+                    <div class="char-row">
+                        <div class="char-row-label">BODY COLOR</div>
+                        <div class="color-swatches" id="body-swatches"></div>
+                    </div>
+                    <div class="char-row">
+                        <div class="char-row-label">ACCENT COLOR</div>
+                        <div class="color-swatches" id="accent-swatches"></div>
+                    </div>
+                    <div class="char-row">
+                        <div class="char-row-label">SHAPE</div>
+                        <div class="shape-opts" id="shape-opts"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MULTIPLAYER TAB -->
+            <div class="menu-panel" id="tab-multiplayer">
+                <div class="mp-section">
+                    <div class="mp-label">YOUR EMAIL</div>
+                    <input class="mp-input" id="mp-email" type="email" placeholder="you@example.com">
+                    <div class="mp-label" style="margin-top:10px;">ROOM CODE (leave blank to create)</div>
+                    <input class="mp-input" id="mp-room" type="text" placeholder="e.g. ALPHA-7" style="text-transform:uppercase;">
+                    <button class="mp-btn" id="mp-join-btn">JOIN / CREATE ROOM</button>
+                    <div id="mp-status">ENTER EMAIL TO JOIN OR CREATE A ROOM</div>
+                </div>
+
+                <div class="mp-section" id="lobby-section" style="display:none;">
+                    <div class="mp-label">LOBBY — <span id="lobby-room-code"></span></div>
+                    <div id="lobby-box"></div>
+                    <button class="mp-btn green" id="lobby-start-btn" style="display:none;">START MATCH</button>
+                    <button class="mp-btn" id="lobby-leave-btn" style="margin-top:4px;">LEAVE ROOM</button>
+                </div>
+            </div>
+
+        </div><!-- /main-menu -->
+
+        <!-- HUD and all other UI elements (unchanged) -->
+        <div id="hud" style="display:none;">
+            <div id="hud-left">
+                <div id="money">$800</div>
+                <div id="health-row">
+                    <div id="health-num">100</div>
+                    <div style="display:flex;flex-direction:column;gap:3px;">
+                        <div id="hp-bar"><div id="hp-fill" style="width:100%"></div></div>
+                        <div id="armor-num">♦ 0</div>
+                    </div>
+                </div>
+                <div id="weapon-info">USP-S</div>
+                <div id="ammo-info">12/36</div>
+            </div>
         </div>
-        <div class="char-row">
-          <div class="char-row-label">CALLSIGN</div>
-          <input class="char-name-input" id="char-name" maxlength="12" placeholder="GHOST_7" value="GHOST_7">
+
+        <div id="hud-center">
+            <div id="team-lives">
+                <div class="team-pip-row" id="ct-pips"></div>
+                <div class="team-pip-row" id="t-pips"></div>
+            </div>
+            <div id="score-bar">
+                <div id="score-ct">0</div>
+                <div id="score-sep">CT · T</div>
+                <div id="score-t">0</div>
+            </div>
+            <div id="round-timer">1:55</div>
+            <div id="round-info">ROUND 1 OF 30</div>
+            <div id="buy-phase-banner">BUY PHASE — PRESS B</div>
         </div>
-        <div class="char-row">
-          <div class="char-row-label">BODY COLOR</div>
-          <div class="color-swatches" id="body-swatches"></div>
+
+        <div id="killfeed"></div>
+        <div id="online-panel">
+            <div id="online-title">ONLINE</div>
+            <div id="online-list"></div>
         </div>
-        <div class="char-row">
-          <div class="char-row-label">ACCENT COLOR</div>
-          <div class="color-swatches" id="accent-swatches"></div>
+
+        <div id="hud-right">
+            <canvas id="minimap" width="110" height="110"></canvas>
         </div>
-        <div class="char-row">
-          <div class="char-row-label">SHAPE</div>
-          <div class="shape-opts" id="shape-opts"></div>
+
+        <div id="bomb-status">
+            <div id="bomb-text">● BOMB PLANTED — SITE A</div>
+            <div id="bomb-bar-wrap"><div id="bomb-bar" style="width:100%"></div></div>
         </div>
-      </div>
-    </div>
+        <div id="defuse-prompt">[F] DEFUSE BOMB</div>
+        <div id="plant-prompt">[F] PLANT BOMB</div>
+        <div id="dead-msg">YOU DIED<br><span style="font-size:16px;color:#8a9199">SPECTATING...</span></div>
 
-    <!-- MULTIPLAYER TAB -->
-    <div class="menu-panel" id="tab-multiplayer">
-      <div class="mp-section">
-        <div class="mp-label">YOUR EMAIL</div>
-        <input class="mp-input" id="mp-email" type="email" placeholder="you@example.com">
-        <div class="mp-label" style="margin-top:10px;">ROOM CODE (leave blank to create)</div>
-        <input class="mp-input" id="mp-room" type="text" placeholder="e.g. ALPHA-7" style="text-transform:uppercase;">
-        <button class="mp-btn" id="mp-join-btn">JOIN / CREATE ROOM</button>
-        <div id="mp-status">ENTER EMAIL TO JOIN OR CREATE A ROOM</div>
-      </div>
-
-      <div class="mp-section" id="lobby-section" style="display:none;">
-        <div class="mp-label">LOBBY — <span id="lobby-room-code"></span></div>
-        <div id="lobby-box"></div>
-        <button class="mp-btn green" id="lobby-start-btn" style="display:none;">START MATCH</button>
-        <button class="mp-btn" id="lobby-leave-btn" style="margin-top:4px;">LEAVE ROOM</button>
-      </div>
-    </div>
-
-  </div><!-- /main-menu -->
-
-  <!-- HUD -->
-  <div id="hud" style="display:none;">
-    <div id="hud-left">
-      <div id="money">$800</div>
-      <div id="health-row">
-        <div id="health-num">100</div>
-        <div style="display:flex;flex-direction:column;gap:3px;">
-          <div id="hp-bar"><div id="hp-fill" style="width:100%"></div></div>
-          <div id="armor-num">♦ 0</div>
+        <div id="crosshair">
+            <div class="ch-side" id="ch-l"></div>
+            <div class="ch-side" id="ch-r"></div>
         </div>
-      </div>
-      <div id="weapon-info">USP-S</div>
-      <div id="ammo-info">12/36</div>
-    </div>
-  </div>
+        <div id="reload-bar">
+            <div id="reload-label">RELOADING</div>
+            <div id="reload-track"><div id="reload-fill"></div></div>
+        </div>
+        <div id="round-end">
+            <div id="re-title">CT WIN</div>
+            <div id="re-reason">ALL TERRORISTS ELIMINATED</div>
+            <div id="re-rewards">+$3,250</div>
+            <div id="re-next">NEXT ROUND IN 4...</div>
+        </div>
+        <div id="buy-menu">
+            <div id="buy-title">BUY MENU</div>
+            <div id="buy-money">FUNDS: $800</div>
+            <div id="buy-items"></div>
+            <div id="buy-close">ESC / B — CLOSE</div>
+        </div>
 
-  <div id="hud-center">
-    <div id="team-lives">
-      <div class="team-pip-row" id="ct-pips"></div>
-      <div class="team-pip-row" id="t-pips"></div>
-    </div>
-    <div id="score-bar">
-      <div id="score-ct">0</div>
-      <div id="score-sep">CT · T</div>
-      <div id="score-t">0</div>
-    </div>
-    <div id="round-timer">1:55</div>
-    <div id="round-info">ROUND 1 OF 30</div>
-    <div id="buy-phase-banner">BUY PHASE — PRESS B</div>
-  </div>
+        <!-- MOBILE CONTROLS -->
+        <div id="mobile-controls">
+            <div id="joystick-zone">
+                <div id="joystick-base"></div>
+                <div id="joystick-stick"></div>
+            </div>
 
-  <div id="killfeed"></div>
-  <div id="online-panel">
-    <div id="online-title">ONLINE</div>
-    <div id="online-list"></div>
-  </div>
+            <div id="weapon-switcher" style="display:none;">
+                <div class="wpn-btn active" data-slot="0">1</div>
+                <div class="wpn-btn" data-slot="1">2</div>
+                <div class="wpn-btn" data-slot="2">3</div>
+            </div>
 
-  <div id="hud-right">
-    <canvas id="minimap" width="110" height="110"></canvas>
-  </div>
+            <div id="action-btns">
+                <div id="btn-row-top">
+                    <div class="act-btn" id="btn-buy">BUY</div>
+                    <div class="act-btn" id="btn-menu">≡</div>
+                </div>
+                <div id="btn-row-bot">
+                    <div class="act-btn" id="btn-action">ACT<br><span style="font-size:7px">F</span></div>
+                    <div class="act-btn" id="btn-reload">RLD<br><span style="font-size:7px">R</span></div>
+                    <div class="act-btn" id="btn-aim">AIM</div>
+                    <div class="act-btn" id="btn-shoot">FIRE</div>
+                </div>
+            </div>
+        </div>
 
-  <div id="bomb-status">
-    <div id="bomb-text">● BOMB PLANTED — SITE A</div>
-    <div id="bomb-bar-wrap"><div id="bomb-bar" style="width:100%"></div></div>
-  </div>
-  <div id="defuse-prompt">[F] DEFUSE BOMB</div>
-  <div id="plant-prompt">[F] PLANT BOMB</div>
-  <div id="dead-msg">YOU DIED<br><span style="font-size:16px;color:#8a9199">SPECTATING...</span></div>
+        <div id="aim-ring"><div id="aim-dot"></div></div>
 
-  <div id="crosshair">
-    <div class="ch-side" id="ch-l"></div>
-    <div class="ch-side" id="ch-r"></div>
-  </div>
-  <div id="reload-bar">
-    <div id="reload-label">RELOADING</div>
-    <div id="reload-track"><div id="reload-fill"></div></div>
-  </div>
-  <div id="round-end">
-    <div id="re-title">CT WIN</div>
-    <div id="re-reason">ALL TERRORISTS ELIMINATED</div>
-    <div id="re-rewards">+$3,250</div>
-    <div id="re-next">NEXT ROUND IN 4...</div>
-  </div>
-  <div id="buy-menu">
-    <div id="buy-title">BUY MENU</div>
-    <div id="buy-money">FUNDS: $800</div>
-    <div id="buy-items"></div>
-    <div id="buy-close">ESC / B — CLOSE</div>
-  </div>
+    </div> <!-- end of #ui -->
 
-  <!-- ═══════════════ MOBILE CONTROLS ═══════════════ -->
-  <div id="mobile-controls">
-    <!-- Left: Joystick -->
-    <div id="joystick-zone">
-      <div id="joystick-base"></div>
-      <div id="joystick-stick"></div>
-    </div>
+    <!-- ==================== SCRIPTS ==================== -->
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 
-    <!-- Weapon switcher strip -->
-    <div id="weapon-switcher" style="display:none;">
-      <div class="wpn-btn active" data-slot="0">1</div>
-      <div class="wpn-btn" data-slot="1">2</div>
-      <div class="wpn-btn" data-slot="2">3</div>
-    </div>
+    <!-- Your Firebase configuration -->
+    <script src="firebase.js"></script>
 
-    <!-- Right: Action buttons -->
-    <div id="action-btns">
-      <div id="btn-row-top">
-        <div class="act-btn" id="btn-buy">BUY</div>
-        <div class="act-btn" id="btn-menu">≡</div>
-      </div>
-      <div id="btn-row-bot">
-        <div class="act-btn" id="btn-action">ACT<br><span style="font-size:7px">F</span></div>
-        <div class="act-btn" id="btn-reload">RLD<br><span style="font-size:7px">R</span></div>
-        <div class="act-btn" id="btn-aim">AIM</div>
-        <div class="act-btn" id="btn-shoot">FIRE</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Aim ring indicator -->
-  <div id="aim-ring"><div id="aim-dot"></div></div>
-
- </div> <!-- end of #ui -->
-
-<!-- Firebase first -->
-<script src="firebase.js"></script>
-
-<!-- Then your main game script -->
-<script src="game.js"></script>
+    <!-- Main game script -->
+    <script src="game.js"></script>
 
 </body>
 </html>
