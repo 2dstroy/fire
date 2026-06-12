@@ -1,7 +1,32 @@
-// Default stubs so solo works even if Firebase is unconfigured
-window._db = null;
-window._firestoreOk = false;
-window._fs = {};
+// ==================== FIREBASE SETUP ====================
+import { db } from './firebase.js';   // ← Change path if needed
+
+// Make it compatible with your existing code
+window._db = db;
+window._firestoreOk = true;
+
+// Import the functions you need
+import { 
+  doc, 
+  setDoc, 
+  getDoc, 
+  onSnapshot, 
+  updateDoc, 
+  deleteField, 
+  serverTimestamp 
+} from "firebase/firestore";
+
+window._fs = { 
+  doc, 
+  setDoc, 
+  getDoc, 
+  onSnapshot, 
+  updateDoc, 
+  deleteField, 
+  serverTimestamp 
+};
+
+console.log("✅ Firebase connected successfully!");
 
 // ══════════════════════════════════════════════════════════
 //  CHARACTER CUSTOMIZATION
