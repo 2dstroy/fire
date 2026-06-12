@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operation Zero Hour — Leaderboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#08111a;color:#e8dfc8;font-family:'Barlow',sans-serif;min-height:100vh;}
+
+.menu-bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(200,169,110,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,169,110,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+.page{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 24px 60px;}
+
+/* Header */
+.header{text-align:center;margin-bottom:40px;}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:54px;font-weight:900;letter-spacing:-1px;text-transform:uppercase;line-height:0.9;}
+.logo span{display:block;font-size:38px;letter-spacing:8px;color:#c8a96e;}
+.sub{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:#8a9199;margin-top:10px;text-transform:uppercase;}
+
+/* Stats bar */
+.stats-row{display:flex;gap:16px;margin-bottom:32px;flex-wrap:wrap;}
+.stat-card{flex:1;min-width:130px;background:rgba(0,0,0,0.4);border:1px solid rgba(200,169,110,0.15);padding:14px 16px;}
+.stat-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:#8a9199;letter-spacing:3px;margin-bottom:6px;}
+.stat-value{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:#c8a96e;}
+
+/* Filter tabs */
+.filter-tabs{display:flex;gap:0;margin-bottom:20px;}
+.ftab{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;padding:7px 16px;border:1px solid rgba(200,169,110,0.15);color:#8a9199;cursor:pointer;transition:all 0.2s;background:transparent;}
+.ftab.active{background:rgba(200,169,110,0.08);border-color:rgba(200,169,110,0.4);color:#c8a96e;}
+.ftab:hover:not(.active){color:#c8a96e;border-color:rgba(200,169,110,0.25);}
+
+/* Search */
+.search-row{display:flex;gap:12px;margin-bottom:20px;align-items:center;}
+.search-input{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(200,169,110,0.15);color:#e8dfc8;font-family:'Share Tech Mono',monospace;font-size:11px;padding:8px 12px;outline:none;letter-spacing:1px;}
+.search-input:focus{border-color:rgba(200,169,110,0.4);}
+.search-input::placeholder{color:#3a4050;}
+.refresh-btn{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:8px 14px;border:1px solid rgba(200,169,110,0.25);color:#c8a96e;cursor:pointer;background:transparent;transition:all 0.2s;}
+.refresh-btn:hover{background:rgba(200,169,110,0.08);}
+
+/* Table */
+.lb-table{width:100%;border-collapse:collapse;}
+.lb-table thead tr{background:rgba(0,0,0,0.5);}
+.lb-table th{font-family:'Share Tech Mono',monospace;font-size:8px;color:#8a9199;letter-spacing:3px;text-transform:uppercase;padding:10px 12px;text-align:left;border-bottom:1px solid rgba(200,169,110,0.1);}
+.lb-table th.num{text-align:right;}
+.lb-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.03);transition:background 0.15s;}
+.lb-table tbody tr:hover{background:rgba(200,169,110,0.04);}
+.lb-table td{padding:11px 12px;font-family:'Share Tech Mono',monospace;font-size:11px;vertical-align:middle;}
+.lb-table td.num{text-align:right;color:#8a9199;}
+
+/* Rank badge */
+.rank{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#3a4050;width:36px;display:inline-block;text-align:center;}
+.rank.gold{color:#c8a96e;}
+.rank.silver{color:#8a9199;}
+.rank.bronze{color:#8B6914;}
+
+/* Player avatar */
+.player-cell{display:flex;align-items:center;gap:10px;}
+.avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);}
+.player-name{color:#e8dfc8;font-size:11px;letter-spacing:1px;}
+.player-email{color:#3a4050;font-size:8px;letter-spacing:1px;margin-top:1px;}
+
+/* KD ratio */
+.kd-good{color:#00ff88;}
+.kd-mid{color:#c8a96e;}
+.kd-bad{color:#e05c4a;}
+
+/* Win rate bar */
+.wr-wrap{display:flex;align-items:center;gap:8px;}
+.wr-bar{width:60px;height:4px;background:rgba(255,255,255,0.07);}
+.wr-fill{height:100%;transition:width 0.3s;}
+
+/* Loading spinner */
+#loading{text-align:center;padding:60px;font-family:'Share Tech Mono',monospace;font-size:11px;color:#8a9199;letter-spacing:3px;}
+#loading::after{content:'';display:block;width:24px;height:24px;border:2px solid rgba(200,169,110,0.2);border-top-color:#c8a96e;border-radius:50%;animation:spin 0.8s linear infinite;margin:16px auto 0;}
+
+/* Empty state */
+#empty{display:none;text-align:center;padding:60px;font-family:'Share Tech Mono',monospace;font-size:11px;color:#3a4050;letter-spacing:3px;}
+
+/* Footer */
+.footer{text-align:center;margin-top:40px;font-family:'Share Tech Mono',monospace;font-size:8px;color:#3a4050;letter-spacing:3px;}
+.footer a{color:#8a9199;text-decoration:none;}
+.footer a:hover{color:#c8a96e;}
+
+/* Badges */
+.badge{font-family:'Share Tech Mono',monospace;font-size:7px;padding:2px 5px;letter-spacing:1px;border:1px solid;margin-left:4px;}
+.badge.mvp{color:#c8a96e;border-color:rgba(200,169,110,0.4);}
+.badge.ct-main{color:#5ba3f0;border-color:rgba(91,163,240,0.3);}
+.badge.t-main{color:#e05c4a;border-color:rgba(224,92,74,0.3);}
+
+/* Live dot */
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#00ff88;animation:pulse-green 1.5s ease-in-out infinite;margin-right:6px;}
+@keyframes pulse-green{0%,100%{opacity:1;}50%{opacity:0.3;}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="menu-bg-grid"></div>
+<div class="page">
+
+  <div class="header">
+    <div class="logo">Operation<span>Zero Hour</span></div>
+    <div class="sub"><span class="live-dot"></span>// global pvp leaderboard · live</div>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">TOTAL PLAYERS</div><div class="stat-value" id="stat-players">—</div></div>
+    <div class="stat-card"><div class="stat-label">TOTAL KILLS</div><div class="stat-value" id="stat-kills">—</div></div>
+    <div class="stat-card"><div class="stat-label">TOTAL GAMES</div><div class="stat-value" id="stat-games">—</div></div>
+    <div class="stat-card"><div class="stat-label">TOP KD</div><div class="stat-value" id="stat-topkd">—</div></div>
+  </div>
+
+  <!-- Filter + search -->
+  <div class="filter-tabs">
+    <div class="ftab active" data-sort="kd">BY K/D</div>
+    <div class="ftab" data-sort="kills">BY KILLS</div>
+    <div class="ftab" data-sort="wins">BY WINS</div>
+    <div class="ftab" data-sort="games">BY GAMES</div>
+  </div>
+
+  <div class="search-row">
+    <input class="search-input" id="search-input" placeholder="Search callsign or email…">
+    <button class="refresh-btn" id="refresh-btn">↺ REFRESH</button>
+  </div>
+
+  <!-- Table -->
+  <div id="loading">LOADING LEADERBOARD...</div>
+  <div id="empty">NO PLAYERS YET — BE THE FIRST!</div>
+  <table class="lb-table" id="lb-table" style="display:none;">
+    <thead>
+      <tr>
+        <th style="width:40px;">#</th>
+        <th>PLAYER</th>
+        <th class="num">KILLS</th>
+        <th class="num">DEATHS</th>
+        <th class="num">K/D</th>
+        <th class="num">WINS</th>
+        <th class="num">GAMES</th>
+        <th class="num">WIN %</th>
+      </tr>
+    </thead>
+    <tbody id="lb-body"></tbody>
+  </table>
+
+  <div class="footer">
+    <a href="operation-zero-hour-pvp.html">← BACK TO GAME</a>
+    &nbsp;&nbsp;//&nbsp;&nbsp;
+    UPDATES LIVE · FIREBASE FIRESTORE
+  </div>
+
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+// ══════════════════════════════════════════
+//  FIREBASE CONFIG — same as game file
+// ══════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, collection, onSnapshot, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+let allPlayers = [];
+let currentSort = 'kd';
+let searchTerm = '';
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // Live listener on leaderboard collection
+  const q = query(collection(db, 'ozh_leaderboard'), orderBy('kills', 'desc'), limit(100));
+  onSnapshot(q, snap => {
+    allPlayers = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    renderTable();
+  }, err => {
+    document.getElementById('loading').textContent = '⚠ FIREBASE NOT CONFIGURED — Edit firebaseConfig in the HTML';
+    console.warn(err);
+  });
+
+} catch(e) {
+  document.getElementById('loading').textContent = '⚠ FIREBASE NOT CONFIGURED — Edit firebaseConfig in the HTML';
+}
+
+// ── Avatar canvas renderer ────────────────────────────
+function renderAvatar(body, shape) {
+  const cv = document.createElement('canvas');
+  cv.width = 28; cv.height = 28;
+  const cx = cv.getContext('2d');
+  cx.fillStyle = '#0d1520'; cx.fillRect(0,0,28,28);
+  cx.fillStyle = body || '#5BA3F0';
+  if(shape==='square'){cx.beginPath();cx.roundRect(4,4,20,20,2);cx.fill();}
+  else if(shape==='diamond'){cx.beginPath();cx.moveTo(14,2);cx.lineTo(26,14);cx.lineTo(14,26);cx.lineTo(2,14);cx.closePath();cx.fill();}
+  else{cx.beginPath();cx.arc(14,14,10,0,Math.PI*2);cx.fill();}
+  return cv.toDataURL();
+}
+
+// ── Sort helpers ─────────────────────────────────────
+function getKD(p){ const d=p.deaths||0; return d===0?(p.kills||0):(p.kills||0)/d; }
+function getWR(p){ const g=p.gamesPlayed||0; return g===0?0:((p.wins||0)/g)*100; }
+
+function sortPlayers(arr) {
+  return [...arr].sort((a,b)=>{
+    if(currentSort==='kd')    return getKD(b)-getKD(a);
+    if(currentSort==='kills') return (b.kills||0)-(a.kills||0);
+    if(currentSort==='wins')  return (b.wins||0)-(a.wins||0);
+    if(currentSort==='games') return (b.gamesPlayed||0)-(a.gamesPlayed||0);
+    return 0;
+  });
+}
+
+function filterPlayers(arr) {
+  if(!searchTerm) return arr;
+  const t=searchTerm.toLowerCase();
+  return arr.filter(p=>(p.name||'').toLowerCase().includes(t)||(p.email||'').toLowerCase().includes(t));
+}
+
+// ── Render ───────────────────────────────────────────
+function renderTable() {
+  const loading=document.getElementById('loading');
+  const empty=document.getElementById('empty');
+  const table=document.getElementById('lb-table');
+  const tbody=document.getElementById('lb-body');
+
+  loading.style.display='none';
+
+  const sorted=sortPlayers(filterPlayers(allPlayers));
+
+  if(sorted.length===0){ empty.style.display='block'; table.style.display='none'; return; }
+  empty.style.display='none'; table.style.display='table';
+
+  // Summary stats
+  const totalKills=allPlayers.reduce((a,p)=>a+(p.kills||0),0);
+  const totalGames=allPlayers.reduce((a,p)=>a+(p.gamesPlayed||0),0);
+  const topKD=allPlayers.reduce((best,p)=>getKD(p)>best?getKD(p):best,0);
+  document.getElementById('stat-players').textContent=allPlayers.length;
+  document.getElementById('stat-kills').textContent=totalKills.toLocaleString();
+  document.getElementById('stat-games').textContent=totalGames.toLocaleString();
+  document.getElementById('stat-topkd').textContent=topKD.toFixed(2);
+
+  tbody.innerHTML='';
+  sorted.forEach((p,i)=>{
+    const rank=i+1;
+    const kd=getKD(p);
+    const wr=getWR(p);
+
+    const rankClass = rank===1?'rank gold':rank===2?'rank silver':rank===3?'rank bronze':'rank';
+    const kdClass = kd>=2?'num kd-good':kd>=1?'num kd-mid':'num kd-bad';
+    const avatarSrc=renderAvatar(p.body,p.shape);
+
+    // Badge logic
+    let badge='';
+    if(rank===1) badge+='<span class="badge mvp">MVP</span>';
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><span class="${rankClass}">${rank}</span></td>
+      <td>
+        <div class="player-cell">
+          <div class="avatar"><img src="${avatarSrc}" width="28" height="28" style="border-radius:inherit;"></div>
+          <div>
+            <div class="player-name">${escHtml(p.name||'UNKNOWN')}${badge}</div>
+            <div class="player-email">${escHtml((p.email||'').replace(/\./g,'·'))}</div>
+          </div>
+        </div>
+      </td>
+      <td class="num">${(p.kills||0).toLocaleString()}</td>
+      <td class="num">${(p.deaths||0).toLocaleString()}</td>
+      <td class="${kdClass}">${kd.toFixed(2)}</td>
+      <td class="num" style="color:#00ff88;">${(p.wins||0)}</td>
+      <td class="num">${(p.gamesPlayed||0)}</td>
+      <td class="num">
+        <div class="wr-wrap">
+          <div class="wr-bar"><div class="wr-fill" style="width:${wr.toFixed(0)}%;background:${wr>=50?'#00ff88':'#e05c4a'};"></div></div>
+          <span style="color:${wr>=50?'#00ff88':'#e05c4a'};min-width:34px;">${wr.toFixed(0)}%</span>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Controls ─────────────────────────────────────────
+document.querySelectorAll('.ftab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    currentSort=tab.dataset.sort;
+    renderTable();
+  });
+});
+
+document.getElementById('search-input').addEventListener('input',e=>{
+  searchTerm=e.target.value.trim();
+  renderTable();
+});
+
+document.getElementById('refresh-btn').addEventListener('click',()=>{
+  document.getElementById('refresh-btn').textContent='↺ ...';
+  setTimeout(()=>{ renderTable(); document.getElementById('refresh-btn').textContent='↺ REFRESH'; },300);
+});
+
+</script>
+</body>
+</html>
