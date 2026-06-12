@@ -5,21 +5,26 @@ const firebaseConfig = {
   projectId: "fire-7eb23",
   storageBucket: "fire-7eb23.firebasestorage.app",
   messagingSenderId: "629103600698",
-  appId: "1:629103600698:web:1e361a37cafbee53860103",
+  appId: "1:629103600698:web:1e361a37cafbee53860103"
 };
 
-// Initialize Firebase (using compat version for simplicity)
-const app = firebase.initializeApp(firebaseConfig);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
 const db = firebase.firestore();
 
 window._db = db;
 window._firestoreOk = true;
+
+// Correct way to expose the functions
 window._fs = {
-  doc: firebase.firestore().doc,
+  doc: (dbRef, path) => db.doc(path),           // or firebase.firestore().doc()
   setDoc: firebase.firestore().setDoc,
   getDoc: firebase.firestore().getDoc,
   onSnapshot: firebase.firestore().onSnapshot,
   updateDoc: firebase.firestore().updateDoc,
-  deleteField: firebase.firestore().deleteField,
-  serverTimestamp: firebase.firestore.FieldValue.serverTimestamp
+  deleteField: firebase.firestore.FieldValue.delete,
+  serverTimestamp: () => firebase.firestore.FieldValue.serverTimestamp()
 };
+
+console.log("✅ Firebase initialized successfully");
